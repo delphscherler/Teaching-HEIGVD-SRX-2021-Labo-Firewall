@@ -218,7 +218,7 @@ ping 192.168.200.3
 
 **LIVRABLE : capture d'écran de votre tentative de ping.**  
 
-![Capture1](C:\Users\delph\PRS\Teaching-HEIGVD-SRX-2021-Labo-Firewall\Capture1.PNG)
+![Capture1](C:\Users\delph\SRX\Teaching-HEIGVD-SRX-2021-Labo-Firewall\captures\Capture1.PNG)
 
 ---
 
@@ -259,11 +259,11 @@ ping 192.168.100.3
 
 **LIVRABLES : captures d'écran des routes des deux machines et de votre nouvelle tentative de ping.**
 
-![Capture3](C:\Users\delph\PRS\Teaching-HEIGVD-SRX-2021-Labo-Firewall\Capture3.PNG)
+![Capture3](C:\Users\delph\SRX\Teaching-HEIGVD-SRX-2021-Labo-Firewall\captures\Capture3.PNG)
 
-![Capture4](C:\Users\delph\PRS\Teaching-HEIGVD-SRX-2021-Labo-Firewall\Capture4.PNG)
+![Capture4](C:\Users\delph\SRX\Teaching-HEIGVD-SRX-2021-Labo-Firewall\captures\Capture4.PNG)
 
-![Capture2](C:\Users\delph\PRS\Teaching-HEIGVD-SRX-2021-Labo-Firewall\Capture2.PNG)
+![Capture2](C:\Users\delph\SRX\Teaching-HEIGVD-SRX-2021-Labo-Firewall\captures\Capture2.PNG)
 
 ---
 
@@ -281,7 +281,7 @@ Si votre ping passe mais que la réponse contient un _Redirect Host_, ceci indiq
 
 **LIVRABLE : capture d'écran de votre ping vers l'Internet. Un ping qui ne passe pas ou des réponses contenant des _Redirect Host_ sont acceptés.**
 
-![Capture5](C:\Users\delph\PRS\Teaching-HEIGVD-SRX-2021-Labo-Firewall\Capture5.PNG)
+![Capture5](C:\Users\delph\SRX\Teaching-HEIGVD-SRX-2021-Labo-Firewall\captures\Capture5.PNG)
 
 ---
 
@@ -366,10 +366,17 @@ iptables -P INPUT DROP
 iptables -P OUTPUT DROP
 iptables -P FORWARD DROP
 
-iptables -A OUTPUT -p icmp --icmp-type 8 -s 192.168.100.0/24 -j ACCEPT
-iptables -A INPUT -p icmp --icmp-type 0 -d 192.168.100.0/24 -j ACCEPT
+#LAN -> DMZ
+iptables -A FORWARD -p icmp --icmp-type 8 -s 192.168.100.0/24 -d 192.168.200.0/24 -j ACCEPT
+iptables -A FORWARD -p icmp --icmp-type 0 -s 192.168.200.0/24 -d 192.168.100.0/24 -j ACCEPT
 
+#LAN -> WAN
+iptables -A FORWARD -p icmp --icmp-type 8 -s 192.168.100.0/24 -o eth0 -j ACCEPT
+iptables -A FORWARD -p icmp --icmp-type 0 -d 192.168.100.0/24 -i eth0 -j ACCEPT
 
+#DMZ -> LAN
+iptables -A FORWARD -p icmp --icmp-type 8 -s 192.168.200.0/24 -d 192.168.100.0/24 -j ACCEPT
+iptables -A FORWARD -p icmp --icmp-type 0 -s 192.168.100.0/24 -d 192.168.200.0/24 -j ACCEPT
 ```
 ---
 
@@ -395,28 +402,30 @@ traceroute 8.8.8.8
 ---
 **LIVRABLE : capture d'écran du traceroute et de votre ping vers l'Internet. Il ne devrait pas y avoir des _Redirect Host_ dans les réponses au ping !**
 
+![Capture6](C:\Users\delph\SRX\Teaching-HEIGVD-SRX-2021-Labo-Firewall\captures\Capture6.PNG)
+
+![Capture7](C:\Users\delph\SRX\Teaching-HEIGVD-SRX-2021-Labo-Firewall\captures\Capture7.PNG)
+
 ---
 
 <ol type="a" start="3">
   <li>Testez ensuite toutes les règles, depuis le Client_in_LAN puis depuis le serveur Web (Server_in_DMZ) et remplir le tableau suivant : 
   </li>                                  
 </ol>
+| De Client\_in\_LAN à | OK/KO | Commentaires et explications           |
+| :------------------- | :---: | :------------------------------------- |
+| Interface DMZ du FW  |  KO   | Policy DROP sur INPUT                  |
+| Interface LAN du FW  |  KO   | Policy DROP sur INPUT                  |
+| Client LAN           |  OK   | Le client peut se ping lui-même (ouf!) |
+| Serveur WAN          |  OK   | Grâce à la règle LAN -> WAN            |
 
 
-| De Client\_in\_LAN à | OK/KO | Commentaires et explications |
-| :---                 | :---: | :---                         |
-| Interface DMZ du FW  |       |                              |
-| Interface LAN du FW  |       |                              |
-| Client LAN           |       |                              |
-| Serveur WAN          |       |                              |
-
-
-| De Server\_in\_DMZ à | OK/KO | Commentaires et explications |
-| :---                 | :---: | :---                         |
-| Interface DMZ du FW  |       |                              |
-| Interface LAN du FW  |       |                              |
-| Serveur DMZ          |       |                              |
-| Serveur WAN          |       |                              |
+| De Server\_in\_DMZ à | OK/KO | Commentaires et explications                                 |
+| :------------------- | :---: | :----------------------------------------------------------- |
+| Interface DMZ du FW  |  KO   | Policy DROP sur INPUT                                        |
+| Interface LAN du FW  |  KO   | Policy DROP sur INPUT                                        |
+| Serveur DMZ          |  OK   | Peut se ping lui-même                                        |
+| Serveur WAN          |  KO   | Policy DROP sur FORWARD et aucune règle permissive pour DMZ -> WAN |
 
 
 ## Règles pour le protocole DNS
@@ -436,6 +445,8 @@ ping www.google.com
 
 **LIVRABLE : capture d'écran de votre ping.**
 
+![Capture8](C:\Users\delph\SRX\Teaching-HEIGVD-SRX-2021-Labo-Firewall\captures\Capture8.PNG)
+
 ---
 
 * Créer et appliquer la règle adéquate pour que la **condition 1 du cahier des charges** soit respectée.
@@ -446,6 +457,9 @@ Commandes iptables :
 
 ```bash
 LIVRABLE : Commandes iptables
+
+iptables -A FORWARD -p udp --dport 53 -j ACCEPT
+iptables -A FORWARD -p udp --sport 53 -j ACCEPT
 ```
 
 ---
@@ -459,6 +473,8 @@ LIVRABLE : Commandes iptables
 
 **LIVRABLE : capture d'écran de votre ping.**
 
+![Capture9](C:\Users\delph\SRX\Teaching-HEIGVD-SRX-2021-Labo-Firewall\captures\Capture9.PNG)
+
 ---
 
 <ol type="a" start="6">
@@ -470,6 +486,8 @@ LIVRABLE : Commandes iptables
 **Réponse**
 
 **LIVRABLE : Votre réponse ici...**
+
+Comme nous n'avions pas encore autoriser les requêtes DNS, le client ne pouvait pas résoudre le nom.
 
 ---
 
@@ -489,7 +507,9 @@ Commandes iptables :
 ---
 
 ```bash
-LIVRABLE : Commandes iptables
+iptables -A FORWARD -p tcp --dport 80 -s 192.168.100.0/24 -o eth0 -j ACCEPT
+iptables -A FORWARD -p tcp --dport 8080 -s 192.168.100.0/24 -o eth0 -j ACCEPT
+iptables -A FORWARD -p tcp --dport 443 -s 192.168.100.0/24 -o eth0 -j ACCEPT
 ```
 
 ---
@@ -501,7 +521,12 @@ Commandes iptables :
 ---
 
 ```bash
-LIVRABLE : Commandes iptables
+#WAN -> Serveur DMZ
+iptables -A FORWARD -p tcp --dport 80 -d 192.168.200.3 -i eth0 -j ACCEPT
+#LAN -> Serveur DMZ
+iptables -A FORWARD -p tcp --dport 80 -s 192.168.100.0/24 -d 192.168.200.3 -j ACCEPT
+
+iptables -A FORWARD -m conntrack --ctstate ESTABLISHED -j ACCEPT
 ```
 ---
 
@@ -513,6 +538,8 @@ LIVRABLE : Commandes iptables
 ---
 
 **LIVRABLE : capture d'écran.**
+
+![Capture10](C:\Users\delph\SRX\Teaching-HEIGVD-SRX-2021-Labo-Firewall\captures\Capture10.PNG)
 
 ---
 
@@ -530,6 +557,12 @@ Commandes iptables :
 
 ```bash
 LIVRABLE : Commandes iptables
+#LAN -> Server DMZ SSH
+iptables -A FORWARD -p tcp --dport 22 -s 192.168.100.3 -d 192.168.200.3 -j ACCEPT
+#LAN -> Firewall SSH
+iptables -A INPUT -p tcp --dport 22 -s 192.168.100.3 -d 192.168.100.2 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 22 -s 192.168.100.2 -d 192.168.100.3 -j ACCEPT
+À CONTROLER
 ```
 
 ---
