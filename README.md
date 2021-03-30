@@ -218,7 +218,7 @@ ping 192.168.200.3
 ```
 ---
 
-![Capture1](captures\Capture1.PNG)
+![Capture1](captures/Capture1.PNG)
 
 ---
 
@@ -257,11 +257,11 @@ ping 192.168.100.3
 
 ---
 
-![Capture3](captures\Capture3.PNG)
+![Capture3](captures/Capture3.PNG)
 
-![Capture4](captures\Capture4.PNG)
+![Capture4](captures/Capture4.PNG)
 
-![Capture2](captures\Capture2.PNG)
+![Capture2](captures/Capture2.PNG)
 
 ---
 
@@ -277,7 +277,7 @@ Si votre ping passe mais que la réponse contient un _Redirect Host_, ceci indiq
 
 ---
 
-![Capture5](captures\Capture5.PNG)
+![Capture5](captures/Capture5.PNG)
 
 ---
 
@@ -394,9 +394,9 @@ traceroute 8.8.8.8
 
 
 ---
-![Capture6](captures\Capture6.PNG)
+![Capture6](captures/Capture6.PNG)
 
-![Capture7](captures\Capture7.PNG)
+![Capture7](captures/Capture7.PNG)
 
 ---
 
@@ -439,7 +439,7 @@ ping www.google.com
 
 ---
 
-![Capture8](captures\Capture8.PNG)
+![Capture8](captures/Capture8.PNG)
 
 ---
 
@@ -463,7 +463,7 @@ iptables -A FORWARD -p udp --sport 53 -j ACCEPT
 
 ---
 
-![Capture9](captures\Capture9.PNG)
+![Capture9](captures/Capture9.PNG)
 
 ---
 
@@ -525,7 +525,7 @@ iptables -A FORWARD -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
 ---
 
-![Capture10](captures\Capture10.PNG)
+![Capture10](captures/Capture10.PNG)
 
 ---
 
@@ -562,11 +562,11 @@ ssh root@192.168.200.3
 
 **Client LAN -> Server DMZ**
 
-![Capture11](captures\Capture11.PNG)
+![Capture11](captures/Capture11.PNG)
 
 **Client LAN -> Firewall**
 
-![Capture12](captures\Capture12.PNG)
+![Capture12](captures/Capture12.PNG)
 
 ---
 
@@ -604,6 +604,6 @@ A présent, vous devriez avoir le matériel nécessaire afin de reproduire la ta
 
 ---
 
-![Capture13](captures\Capture13.PNG)
+![Capture13](captures/Capture13.PNG)
 
 ---
